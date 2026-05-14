@@ -2,72 +2,132 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Brüche Trainer Klasse 6</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Wiederholung</title>
 
   <style>
     body {
-      font-family: Arial;
-      max-width: 600px;
-      margin: auto;
+      font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
       padding: 20px;
     }
 
-    .task {
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
     }
 
-    button {
-      padding: 10px;
+    .task {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .question {
+      margin-bottom: 18px;
+      font-size: 24px;
+    }
+
+    .fraction-input {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin-top: 10px;
+    }
+
+    .fraction-input input {
+      width: 90px;
+      height: 46px;
+      font-size: 22px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .fraction-line {
+      width: 95px;
+      border-top: 2px solid #000;
+      margin: 5px 0;
     }
 
     .result {
-      margin-top: 10px;
-      font-weight: bold;
+      margin-top: 12px;
+      font-weight: 600;
+      min-height: 24px;
+      color: #000;
     }
 
-    /* BRUCH-DARSTELLUNG */
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      background: #cdb4f6;
+      color: #2b2b2b;
+      font-weight: 600;
+    }
+
     .fraction {
       display: inline-flex;
       flex-direction: column;
       align-items: center;
       line-height: 1.1;
-      font-size: 18px;
+      font-size: 24px;
+      vertical-align: middle;
+      margin: 0 4px;
     }
 
     .top {
-      border-bottom: 1px solid black;
-      padding: 0 5px;
+      border-bottom: 2px solid #000;
+      padding: 0 6px;
     }
 
     .bottom {
-      padding: 0 5px;
+      padding: 0 6px;
     }
 
-    input {
-      width: 60px;
+    .finish {
       text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      padding: 40px;
     }
+
   </style>
 </head>
 
 <body>
 
-<h2>Brüche Trainer (Klasse 6)</h2>
+<div class="container">
 
-<div id="app"></div>
+  <h2>Wiederholung</h2>
 
-<button onclick="checkAll()">Antworten prüfen</button>
-<button onclick="newSession()">Neue Aufgaben</button>
+  <div id="app"></div>
 
-<p id="score"></p>
+</div>
 
 <script>
 
-let tasks = [];
+let task = null;
+let count = 0;
+let correctCount = 0;
+let checked = false;
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -79,10 +139,9 @@ function gcd(a, b) {
 
 function simplify(n, d) {
   let g = gcd(n, d);
-  return [n/g, d/g];
+  return [n / g, d / g];
 }
 
-/* BRUCH HTML */
 function frac(n, d) {
   return `
     <span class="fraction">
@@ -92,110 +151,127 @@ function frac(n, d) {
   `;
 }
 
-/* AUFGABEN */
-
+/* Aufgabe */
 function generateTask() {
-  let type = rand(1,4);
+  let type = rand(1, 5);
 
   if (type === 1) {
-    let n = rand(2,20);
-    let d = rand(2,20);
-    let g = rand(2,5);
+    let n = rand(2, 20);
+    let d = rand(2, 20);
+    let g = rand(2, 5);
 
     return {
-      q: `Kürzen: ${frac(n*g, d*g)}`,
+      q: `Kürze ${frac(n * g, d * g)} vollständig`,
       a: simplify(n, d)
     };
   }
 
   if (type === 2) {
-    let n = rand(1,10);
-    let d = rand(2,10);
-    let g = rand(2,5);
+    let n = rand(1, 10);
+    let d = rand(2, 10);
+    let g = rand(2, 5);
 
     return {
-      q: `Erweitern: ${frac(n, d)} mit ${g}`,
-      a: [n*g, d*g]
+      q: `Erweitere ${frac(n, d)} mit ${g}`,
+      a: [n * g, d * g]
     };
   }
 
   if (type === 3) {
-    let a = rand(1,10), b = rand(2,10);
-    let c = rand(1,10), d = rand(2,10);
-
-    let num = a*d + c*b;
-    let den = b*d;
+    let a = rand(1, 10), b = rand(2, 10);
+    let c = rand(1, 10), d = rand(2, 10);
 
     return {
-      q: `${frac(a,b)} + ${frac(c,d)}`,
-      a: simplify(num, den)
+      q: `Berechne ${frac(a, b)} + ${frac(c, d)}`,
+      a: simplify(a * d + c * b, b * d)
     };
   }
 
-  let a = rand(1,10), b = rand(1,10);
-  let c = rand(1,10), d = rand(1,10);
+  if (type === 4) {
+    let a = rand(1, 10), b = rand(1, 10);
+    let c = rand(1, 10), d = rand(1, 10);
+
+    return {
+      q: `Berechne ${frac(a, b)} · ${frac(c, d)}`,
+      a: simplify(a * c, b * d)
+    };
+  }
+
+  let a = rand(1, 10), b = rand(1, 10);
+  let c = rand(1, 10), d = rand(1, 10);
 
   return {
-    q: `${frac(a,b)} × ${frac(c,d)}`,
-    a: simplify(a*c, b*d)
+    q: `Berechne ${frac(a, b)} : ${frac(c, d)}`,
+    a: simplify(a * d, b * c)
   };
 }
 
-/* SESSION */
+/* Render */
+function renderTask() {
 
-function newSession() {
-  tasks = [];
-  let html = "";
-
-  for (let i=0; i<6; i++) {
-    let t = generateTask();
-    tasks.push(t);
-
-    html += `
+  if (count >= 5) {
+    document.getElementById("app").innerHTML = `
       <div class="task">
-        <div>${t.q}</div>
-
-        <input id="n${i}" placeholder="Zähler">
-        /
-        <input id="d${i}" placeholder="Nenner">
-
-        <div id="r${i}" class="result"></div>
+        <div class="finish">fertig</div>
+        <div>${correctCount} / 5 richtig</div>
       </div>
     `;
+    return;
   }
 
-  document.getElementById("app").innerHTML = html;
-  document.getElementById("score").innerText = "";
+  task = generateTask();
+  checked = false;
+
+  document.getElementById("app").innerHTML = `
+    <div class="task">
+
+      <div class="question">${task.q}</div>
+
+      <div class="fraction-input">
+        <input id="n">
+        <div class="fraction-line"></div>
+        <input id="d">
+      </div>
+
+      <div id="r" class="result"></div>
+
+      <button id="btn" onclick="check()">weiter</button>
+
+    </div>
+  `;
 }
 
-/* CHECK */
+/* Check */
+function check() {
 
-function checkAll() {
-  let score = 0;
+  if (checked) return;
 
-  for (let i=0; i<tasks.length; i++) {
-    let n = parseInt(document.getElementById("n"+i).value);
-    let d = parseInt(document.getElementById("d"+i).value);
+  let n = parseInt(document.getElementById("n").value);
+  let d = parseInt(document.getElementById("d").value);
+  let el = document.getElementById("r");
+  let btn = document.getElementById("btn");
 
-    let correct = tasks[i].a;
+  if (!n || !d) return;
 
-    let el = document.getElementById("r"+i);
-
-    if (n === correct[0] && d === correct[1]) {
-      el.innerText = "richtig";
-      el.style.color = "green";
-      score++;
-    } else {
-      el.innerText = `falsch (Lösung: ${correct[0]}/${correct[1]})`;
-      el.style.color = "red";
-    }
+  if (n === task.a[0] && d === task.a[1]) {
+    el.innerText = "richtig";
+    correctCount++;
+  } else {
+    el.innerHTML = `die richtige Lösung wäre: ${frac(task.a[0], task.a[1])}`;
   }
 
-  document.getElementById("score").innerText =
-    "Punkte: " + score + " / 6";
+  checked = true;
+  btn.innerText = "weiter";
+  btn.onclick = next;
 }
 
-newSession();
+/* Next */
+function next() {
+  count++;
+  renderTask();
+}
+
+renderTask();
 
 </script>
 
