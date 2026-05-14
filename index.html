@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Brüche Trainer Klasse 6</title>
+
   <style>
     body {
       font-family: Arial;
@@ -10,26 +11,49 @@
       margin: auto;
       padding: 20px;
     }
+
     .task {
       margin-bottom: 15px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
     }
-    input {
-      width: 80px;
-      margin-right: 5px;
-    }
+
     button {
       padding: 10px;
       margin-top: 10px;
     }
+
     .result {
       margin-top: 10px;
       font-weight: bold;
     }
+
+    /* BRUCH-DARSTELLUNG */
+    .fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.1;
+      font-size: 18px;
+    }
+
+    .top {
+      border-bottom: 1px solid black;
+      padding: 0 5px;
+    }
+
+    .bottom {
+      padding: 0 5px;
+    }
+
+    input {
+      width: 60px;
+      text-align: center;
+    }
   </style>
 </head>
+
 <body>
 
 <h2>Brüche Trainer (Klasse 6)</h2>
@@ -42,6 +66,7 @@
 <p id="score"></p>
 
 <script>
+
 let tasks = [];
 
 function rand(min, max) {
@@ -57,7 +82,18 @@ function simplify(n, d) {
   return [n/g, d/g];
 }
 
-// Aufgaben
+/* BRUCH HTML */
+function frac(n, d) {
+  return `
+    <span class="fraction">
+      <span class="top">${n}</span>
+      <span class="bottom">${d}</span>
+    </span>
+  `;
+}
+
+/* AUFGABEN */
+
 function generateTask() {
   let type = rand(1,4);
 
@@ -65,8 +101,9 @@ function generateTask() {
     let n = rand(2,20);
     let d = rand(2,20);
     let g = rand(2,5);
+
     return {
-      q: `Kürzen: ${n*g}/${d*g}`,
+      q: `Kürzen: ${frac(n*g, d*g)}`,
       a: simplify(n, d)
     };
   }
@@ -75,8 +112,9 @@ function generateTask() {
     let n = rand(1,10);
     let d = rand(2,10);
     let g = rand(2,5);
+
     return {
-      q: `Erweitern: ${n}/${d} mit ${g}`,
+      q: `Erweitern: ${frac(n, d)} mit ${g}`,
       a: [n*g, d*g]
     };
   }
@@ -84,21 +122,26 @@ function generateTask() {
   if (type === 3) {
     let a = rand(1,10), b = rand(2,10);
     let c = rand(1,10), d = rand(2,10);
+
     let num = a*d + c*b;
     let den = b*d;
+
     return {
-      q: `${a}/${b} + ${c}/${d}`,
+      q: `${frac(a,b)} + ${frac(c,d)}`,
       a: simplify(num, den)
     };
   }
 
   let a = rand(1,10), b = rand(1,10);
   let c = rand(1,10), d = rand(1,10);
+
   return {
-    q: `${a}/${b} × ${c}/${d}`,
+    q: `${frac(a,b)} × ${frac(c,d)}`,
     a: simplify(a*c, b*d)
   };
 }
+
+/* SESSION */
 
 function newSession() {
   tasks = [];
@@ -111,9 +154,11 @@ function newSession() {
     html += `
       <div class="task">
         <div>${t.q}</div>
+
         <input id="n${i}" placeholder="Zähler">
         /
         <input id="d${i}" placeholder="Nenner">
+
         <div id="r${i}" class="result"></div>
       </div>
     `;
@@ -122,6 +167,8 @@ function newSession() {
   document.getElementById("app").innerHTML = html;
   document.getElementById("score").innerText = "";
 }
+
+/* CHECK */
 
 function checkAll() {
   let score = 0;
@@ -149,6 +196,7 @@ function checkAll() {
 }
 
 newSession();
+
 </script>
 
 </body>
