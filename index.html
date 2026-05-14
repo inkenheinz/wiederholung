@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Brüche Trainer Klasse 6</title>
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    .task {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    input {
+      width: 80px;
+      margin-right: 5px;
+    }
+    button {
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .result {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Brüche Trainer (Klasse 6)</h2>
+
+<div id="app"></div>
+
+<button onclick="checkAll()">Antworten prüfen</button>
+<button onclick="newSession()">Neue Aufgaben</button>
+
+<p id="score"></p>
+
+<script>
+let tasks = [];
+
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function gcd(a, b) {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+function simplify(n, d) {
+  let g = gcd(n, d);
+  return [n/g, d/g];
+}
+
+// Aufgaben
+function generateTask() {
+  let type = rand(1,4);
+
+  if (type === 1) {
+    let n = rand(2,20);
+    let d = rand(2,20);
+    let g = rand(2,5);
+    return {
+      q: `Kürzen: ${n*g}/${d*g}`,
+      a: simplify(n, d)
+    };
+  }
+
+  if (type === 2) {
+    let n = rand(1,10);
+    let d = rand(2,10);
+    let g = rand(2,5);
+    return {
+      q: `Erweitern: ${n}/${d} mit ${g}`,
+      a: [n*g, d*g]
+    };
+  }
+
+  if (type === 3) {
+    let a = rand(1,10), b = rand(2,10);
+    let c = rand(1,10), d = rand(2,10);
+    let num = a*d + c*b;
+    let den = b*d;
+    return {
+      q: `${a}/${b} + ${c}/${d}`,
+      a: simplify(num, den)
+    };
+  }
+
+  let a = rand(1,10), b = rand(1,10);
+  let c = rand(1,10), d = rand(1,10);
+  return {
+    q: `${a}/${b} × ${c}/${d}`,
+    a: simplify(a*c, b*d)
+  };
+}
+
+function newSession() {
+  tasks = [];
+  let html = "";
+
+  for (let i=0; i<6; i++) {
+    let t = generateTask();
+    tasks.push(t);
+
+    html += `
+      <div class="task">
+        <div>${t.q}</div>
+        <input id="n${i}" placeholder="Zähler">
+        /
+        <input id="d${i}" placeholder="Nenner">
+        <div id="r${i}" class="result"></div>
+      </div>
+    `;
+  }
+
+  document.getElementById("app").innerHTML = html;
+  document.getElementById("score").innerText = "";
+}
+
+function checkAll() {
+  let score = 0;
+
+  for (let i=0; i<tasks.length; i++) {
+    let n = parseInt(document.getElementById("n"+i).value);
+    let d = parseInt(document.getElementById("d"+i).value);
+
+    let correct = tasks[i].a;
+
+    let el = document.getElementById("r"+i);
+
+    if (n === correct[0] && d === correct[1]) {
+      el.innerText = "richtig";
+      el.style.color = "green";
+      score++;
+    } else {
+      el.innerText = `falsch (Lösung: ${correct[0]}/${correct[1]})`;
+      el.style.color = "red";
+    }
+  }
+
+  document.getElementById("score").innerText =
+    "Punkte: " + score + " / 6";
+}
+
+newSession();
+</script>
+
+</body>
+</html>
